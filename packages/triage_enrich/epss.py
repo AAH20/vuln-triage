@@ -19,8 +19,9 @@ EPSS_URL = "https://epss.empiricalsecurity.com/epss_scores-current.csv.gz"
 
 
 class EpssTable:
-    def __init__(self, by_cve: Dict[str, Tuple[float, str]]):
+    def __init__(self, by_cve: Dict[str, Tuple[float, str]], mode: str):
         self._by_cve = by_cve
+        self.mode = mode
 
     def get(self, cve: str) -> Optional[Tuple[float, str]]:
         """Return (probability, date) if known, else None."""
@@ -32,7 +33,7 @@ class EpssTable:
     @classmethod
     def load_sample(cls) -> "EpssTable":
         text = (data_dir() / "epss-sample.csv").read_text(encoding="utf-8")
-        return cls(_parse(text))
+        return cls(_parse(text), "sample")
 
     @classmethod
     def load_live(cls) -> "EpssTable":
@@ -41,7 +42,12 @@ class EpssTable:
 
         with urllib.request.urlopen(EPSS_URL, timeout=30) as r:  # noqa: S310
             raw = gzip.decompress(r.read()).decode("utf-8")
-        return cls(_parse(raw))
+        return cls(_parse(raw), "live")
+
+    @classmethod
+    def load_file(cls, path: str) -> "EpssTable":
+        from pathlib import Path
+        return cls(_parse(Path(path).read_text(encoding="utf-8")), "file")
 
 
 def _parse(text: str) -> Dict[str, Tuple[float, str]]:

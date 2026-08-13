@@ -17,8 +17,9 @@ KEV_URL = (
 
 
 class KevTable:
-    def __init__(self, by_cve: Dict[str, str]):
+    def __init__(self, by_cve: Dict[str, str], mode: str):
         self._by_cve = by_cve
+        self.mode = mode
 
     def get(self, cve: str) -> Optional[str]:
         """Return the dateAdded if the CVE is in KEV, else None."""
@@ -30,7 +31,7 @@ class KevTable:
     @classmethod
     def load_sample(cls) -> "KevTable":
         doc = json.loads((data_dir() / "kev-sample.json").read_text(encoding="utf-8"))
-        return cls(_index(doc))
+        return cls(_index(doc), "sample")
 
     @classmethod
     def load_live(cls) -> "KevTable":
@@ -38,7 +39,12 @@ class KevTable:
 
         with urllib.request.urlopen(KEV_URL, timeout=30) as r:  # noqa: S310
             doc = json.loads(r.read().decode("utf-8"))
-        return cls(_index(doc))
+        return cls(_index(doc), "live")
+
+    @classmethod
+    def load_file(cls, path: str) -> "KevTable":
+        from pathlib import Path
+        return cls(_index(json.loads(Path(path).read_text(encoding="utf-8"))), "file")
 
 
 def _index(doc: dict) -> Dict[str, str]:

@@ -1,4 +1,4 @@
-"""Filesystem anchors. The repo root is two levels above packages/<pkg>/."""
+"""Filesystem anchors that work from a source checkout and an installed wheel."""
 from __future__ import annotations
 
 from pathlib import Path
@@ -10,4 +10,5 @@ def repo_root() -> Path:
 
 
 def data_dir() -> Path:
-    return repo_root() / "data"
+    packaged = Path(__file__).resolve().parent / "data"
+    return packaged if packaged.exists() else repo_root() / "data"

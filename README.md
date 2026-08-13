@@ -11,8 +11,7 @@ $ triage -i scan.json -a assets.json
 
   Exploit-Aware Vulnerability Triage
   ==========================================================
-  10 findings ingested  ->  3 require a decision  (2 FIX NOW, 1 this cycle)
-  7 deprioritized as noise (70% of the list)
+  Demo mode: sample intelligence is never treated as a production decision.
   ----------------------------------------------------------
   TIER      CVE                 EPSS  KEV  CVSS  ASSET
   ----------------------------------------------------------
@@ -23,7 +22,7 @@ $ triage -i scan.json -a assets.json
   Top exposure CVE-2021-44228: expected loss $60K-$1.8M, fix within 7 days.
 ```
 
-Two of the seven it dropped are **CVSS 9.8 "Critical"** (zlib, glibc) — demoted because nobody is exploiting them. That is the whole point.
+Production decisions require live or explicitly supplied feed snapshots. Absence from KEV is not proof of non-exploitation, and missing EPSS remains `UNKNOWN`.
 
 ## Why CVSS alone is the noise
 
@@ -40,7 +39,8 @@ CVSS is *technical severity in the abstract*. FIRST (who maintain CVSS) and CISA
 
 - **FIX NOW** — KEV **and** (reachable **or** business-critical). 7-day deadline.
 - **FIX THIS CYCLE** — in KEV, or EPSS ≥ 10%. 30-day window.
-- **MONITOR / ACCEPT** — no confirmed exploitation, low probability. Documented acceptance.
+- **MONITOR CANDIDATE** — no KEV match in the supplied catalog and comparatively low EPSS. A named risk owner decides acceptance.
+- **UNKNOWN** — missing, sample, or incomplete intelligence; cannot be deprioritized.
 
 ## Install & run
 
@@ -48,15 +48,13 @@ CVSS is *technical severity in the abstract*. FIRST (who maintain CVSS) and CISA
 git clone <this repo> && cd vuln-triage
 pip install -e .                      # gives you the `triage` command
 # or run with no install:
-PYTHONPATH=packages python -m triage_cli.main -i examples/sample-trivy.json -a examples/assets.json
+PYTHONPATH=packages python -m triage_cli.main --demo -i examples/sample-trivy.json -a examples/assets.json
 
-triage -i scan.json                   # table
-triage -i scan.json -a assets.json -f memo       # executive board memo
-triage -i scan.json -a assets.json -f register   # full markdown treatment register
-triage -i scan.json --refresh          # pull live CISA KEV + FIRST EPSS
+triage --refresh -i scan.json
+triage --feed-files kev.json epss.csv -i scan.json -a assets.json -f memo
 ```
 
-Ships with an offline KEV/EPSS sample so it runs instantly; `--refresh` pulls the live feeds. **Pure standard library — no dependencies.**
+Ships with explicit `--demo` fixtures; demo results are always `UNKNOWN`. `--refresh` pulls live feeds. **Pure standard library — no runtime dependencies.**
 
 ## Feeds any scanner
 
@@ -68,7 +66,7 @@ nmap --script vulners target -oX - | ... > cves.txt && triage -i cves.txt   # an
 
 ## What it is, and isn't — honestly
 
-- The expected-loss figure is a **CRQ scaffold** (measured likelihood × your asset value), presented as a **range, never a fake precise number**. Supply real asset values to calibrate it.
+- Monetary values appear only when the organization supplies an explicit loss scenario and source. KEV membership is never converted into a fabricated organizational compromise probability.
 - The ATT&CK path is a **narrative** — the plausible chain a vuln enables, mapped to ATT&CK — **not an executed attack.** `triage` runs nothing against any target. It is not a Caldera-class emulation platform.
 - Public exploitation activity does **not** prove *you* are being targeted; only authorized environment evidence does. The memo says so.
 
@@ -84,7 +82,7 @@ packages/
   triage_cli      the `triage` command
 ```
 
-Every identical input produces byte-identical output — verified by property tests (`python tests/test_decide.py`).
+Every identical input produces the same decision output, verified by executable invariant tests (`python tests/test_decide.py`).
 
 ## From triage to closure
 

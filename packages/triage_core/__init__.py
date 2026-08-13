@@ -1,5 +1,5 @@
 """triage_core: shared models, paths and impact defaults."""
-from .models import IMPACT_BY_CRITICALITY, Asset, Enriched, Finding, Verdict
+from .models import Asset, Enriched, Finding, Verdict
 from .paths import data_dir, repo_root
 
 __all__ = [
@@ -7,7 +7,6 @@ __all__ = [
     "Enriched",
     "Finding",
     "Verdict",
-    "IMPACT_BY_CRITICALITY",
     "data_dir",
     "repo_root",
 ]

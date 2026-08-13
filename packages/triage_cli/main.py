@@ -32,14 +32,18 @@ def _load_assets(path: str) -> tuple[Dict[str, Asset], Asset]:
                 name="default",
                 internet_facing=bool(cfg.get("internet_facing", False)),
                 criticality=cfg.get("criticality", "medium"),
-                business_value_usd=float(cfg.get("business_value_usd", 0) or 0),
+                loss_scenario_low_usd=cfg.get("loss_scenario_low_usd"),
+                loss_scenario_high_usd=cfg.get("loss_scenario_high_usd"),
+                loss_scenario_source=cfg.get("loss_scenario_source", ""),
             )
             continue
         assets[name] = Asset(
             name=name,
             internet_facing=bool(cfg.get("internet_facing", False)),
             criticality=cfg.get("criticality", "medium"),
-            business_value_usd=float(cfg.get("business_value_usd", 0) or 0),
+            loss_scenario_low_usd=cfg.get("loss_scenario_low_usd"),
+            loss_scenario_high_usd=cfg.get("loss_scenario_high_usd"),
+            loss_scenario_source=cfg.get("loss_scenario_source", ""),
         )
     return assets, default
 
@@ -53,7 +57,10 @@ def main(argv=None) -> int:
     p.add_argument("--assets", "-a", default="", help="asset context JSON (reachability, criticality, value)")
     p.add_argument("--format", "-f", default="table", choices=["table", "register", "memo"])
     p.add_argument("--out", "-o", default="", help="write output to a file instead of stdout")
-    p.add_argument("--refresh", action="store_true", help="pull live CISA KEV and FIRST EPSS feeds")
+    source = p.add_mutually_exclusive_group(required=True)
+    source.add_argument("--refresh", action="store_true", help="pull live CISA KEV and FIRST EPSS feeds")
+    source.add_argument("--demo", action="store_true", help="use bundled samples; every decision is UNKNOWN")
+    source.add_argument("--feed-files", nargs=2, metavar=("KEV_JSON", "EPSS_CSV"), help="use supplied feed snapshots")
     args = p.parse_args(argv)
 
     findings = detect_and_load(args.input)
@@ -64,9 +71,12 @@ def main(argv=None) -> int:
     if args.refresh:
         kev = KevTable.load_live()
         epss = EpssTable.load_live()
-    else:
+    elif args.demo:
         kev = KevTable.load_sample()
         epss = EpssTable.load_sample()
+    else:
+        kev = KevTable.load_file(args.feed_files[0])
+        epss = EpssTable.load_file(args.feed_files[1])
 
     enriched = enrich(findings, kev, epss)
     assets, default = _load_assets(args.assets)

@@ -24,9 +24,10 @@ def enrich(findings: List[Finding], kev: KevTable, epss: EpssTable) -> List[Enri
                 finding=f,
                 kev=k is not None,
                 kev_date=k or "",
-                epss=e[0] if e else 0.0,
+                epss=e[0] if e else None,
                 epss_date=e[1] if e else "",
-                exploit_available=k is not None,  # KEV implies a working exploit
+                intelligence_mode=kev.mode if kev.mode == epss.mode else "mixed",
+                intelligence_fresh=kev.mode == "live" and epss.mode == "live",
             )
         )
     return out

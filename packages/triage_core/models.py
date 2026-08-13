@@ -6,17 +6,7 @@ verdicts, so nothing here carries wall-clock state or randomness.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List
-
-# Illustrative impact ranges (USD) used only when the customer supplies no
-# asset business value. They are placeholders for a real CRQ input, never a
-# claim of precision. The board memo says so explicitly.
-IMPACT_BY_CRITICALITY = {
-    "critical": (500_000, 5_000_000),
-    "high": (100_000, 1_000_000),
-    "medium": (20_000, 200_000),
-    "low": (5_000, 50_000),
-}
+from typing import List, Optional
 
 
 @dataclass(frozen=True)
@@ -38,7 +28,9 @@ class Asset:
     name: str
     internet_facing: bool = False
     criticality: str = "medium"        # low | medium | high | critical
-    business_value_usd: float = 0.0    # 0 => fall back to IMPACT_BY_CRITICALITY
+    loss_scenario_low_usd: Optional[float] = None
+    loss_scenario_high_usd: Optional[float] = None
+    loss_scenario_source: str = ""
 
 
 @dataclass(frozen=True)
@@ -47,9 +39,10 @@ class Enriched:
     finding: Finding
     kev: bool = False          # present in CISA Known Exploited Vulnerabilities
     kev_date: str = ""
-    epss: float = 0.0          # FIRST EPSS 30-day exploitation probability
+    epss: Optional[float] = None
     epss_date: str = ""
-    exploit_available: bool = False
+    intelligence_mode: str = "unknown"
+    intelligence_fresh: bool = False
 
 
 @dataclass
@@ -57,13 +50,13 @@ class Verdict:
     """The decision. This is the product: a scanner gives a list, we give this."""
     enriched: Enriched
     asset: Asset
-    tier: str                                  # fix_now | fix_cycle | monitor
+    tier: str                                  # fix_now | fix_cycle | monitor_candidate | unknown
     score: float                               # ordering key, higher = sooner
     deadline_days: int
     reasons: List[str] = field(default_factory=list)
     attack_path: List[tuple] = field(default_factory=list)
-    expected_loss_low: float = 0.0
-    expected_loss_high: float = 0.0
+    loss_scenario_low: Optional[float] = None
+    loss_scenario_high: Optional[float] = None
 
     @property
     def cve(self) -> str:
