@@ -1,0 +1,11 @@
+{
+  "web-prod-01": {
+    "internet_facing": true,
+    "criticality": "critical",
+    "business_value_usd": 2000000
+  },
+  "default": {
+    "internet_facing": false,
+    "criticality": "medium"
+  }
+}

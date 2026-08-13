@@ -1,0 +1,24 @@
+{
+  "SchemaVersion": 2,
+  "ArtifactName": "web-prod-01",
+  "ArtifactType": "container_image",
+  "Results": [
+    {
+      "Target": "web-prod-01 (debian 12.4)",
+      "Class": "os-pkgs",
+      "Type": "debian",
+      "Vulnerabilities": [
+        { "VulnerabilityID": "CVE-2021-44228", "PkgName": "log4j-core", "InstalledVersion": "2.14.1", "Severity": "CRITICAL", "Title": "Log4Shell remote code execution", "CVSS": { "nvd": { "V3Score": 10.0 } } },
+        { "VulnerabilityID": "CVE-2023-4966", "PkgName": "netscaler-gateway", "InstalledVersion": "13.1", "Severity": "CRITICAL", "Title": "Citrix Bleed session token disclosure", "CVSS": { "nvd": { "V3Score": 9.4 } } },
+        { "VulnerabilityID": "CVE-2023-38545", "PkgName": "curl", "InstalledVersion": "7.88.1", "Severity": "CRITICAL", "Title": "curl SOCKS5 heap buffer overflow", "CVSS": { "nvd": { "V3Score": 9.8 } } },
+        { "VulnerabilityID": "CVE-2023-45853", "PkgName": "zlib", "InstalledVersion": "1.2.13", "Severity": "CRITICAL", "Title": "MiniZip integer overflow", "CVSS": { "nvd": { "V3Score": 9.8 } } },
+        { "VulnerabilityID": "CVE-2019-1010022", "PkgName": "glibc", "InstalledVersion": "2.36", "Severity": "CRITICAL", "Title": "glibc stack guard protection bypass", "CVSS": { "nvd": { "V3Score": 9.8 } } },
+        { "VulnerabilityID": "CVE-2023-29491", "PkgName": "ncurses", "InstalledVersion": "6.4", "Severity": "HIGH", "Title": "ncurses local privilege issue", "CVSS": { "nvd": { "V3Score": 7.8 } } },
+        { "VulnerabilityID": "CVE-2022-3715", "PkgName": "bash", "InstalledVersion": "5.2.15", "Severity": "HIGH", "Title": "bash heap buffer overflow", "CVSS": { "nvd": { "V3Score": 7.8 } } },
+        { "VulnerabilityID": "CVE-2021-33560", "PkgName": "libgcrypt20", "InstalledVersion": "1.10.1", "Severity": "HIGH", "Title": "libgcrypt ElGamal side channel", "CVSS": { "nvd": { "V3Score": 7.5 } } },
+        { "VulnerabilityID": "CVE-2022-40897", "PkgName": "python3-setuptools", "InstalledVersion": "66.1.1", "Severity": "HIGH", "Title": "setuptools ReDoS", "CVSS": { "nvd": { "V3Score": 7.5 } } },
+        { "VulnerabilityID": "CVE-2020-8284", "PkgName": "curl", "InstalledVersion": "7.88.1", "Severity": "LOW", "Title": "curl FTP PASV trust issue", "CVSS": { "nvd": { "V3Score": 3.7 } } }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "title": "CISA Known Exploited Vulnerabilities Catalog (bundled sample)",
+  "note": "Offline demo subset. Run `triage --refresh` to pull the full live catalog.",
+  "vulnerabilities": [
+    { "cveID": "CVE-2021-44228", "vendorProject": "Apache", "product": "Log4j2", "dateAdded": "2021-12-10" },
+    { "cveID": "CVE-2023-4966", "vendorProject": "Citrix", "product": "NetScaler ADC", "dateAdded": "2023-10-18" },
+    { "cveID": "CVE-2021-26855", "vendorProject": "Microsoft", "product": "Exchange Server", "dateAdded": "2021-11-03" },
+    { "cveID": "CVE-2022-1388", "vendorProject": "F5", "product": "BIG-IP", "dateAdded": "2022-05-10" },
+    { "cveID": "CVE-2018-13379", "vendorProject": "Fortinet", "product": "FortiOS", "dateAdded": "2021-11-03" },
+    { "cveID": "CVE-2019-0708", "vendorProject": "Microsoft", "product": "Remote Desktop Services", "dateAdded": "2022-02-10" },
+    { "cveID": "CVE-2021-34527", "vendorProject": "Microsoft", "product": "Windows Print Spooler", "dateAdded": "2021-11-03" },
+    { "cveID": "CVE-2023-34362", "vendorProject": "Progress", "product": "MOVEit Transfer", "dateAdded": "2023-06-02" }
+  ]
+}

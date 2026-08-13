@@ -1,0 +1,97 @@
+# Triage — Exploit-Aware Vulnerability Triage
+
+**Stop scanning. Start deciding.**
+
+Your scanner found 500 CVEs. Which 12 actually matter *right now*? `triage` answers that — by prioritizing on real-world exploitation, not CVSS severity alone.
+
+It is **not another scanner.** It sits on top of the one you already run (Trivy, Grype, OpenVAS, Nmap NSE, or a plain CVE list), enriches every finding with **CISA KEV** (is it *actually* being exploited?) and **FIRST EPSS** (30-day probability?), factors in reachability and business criticality, and produces a decision — with a board-ready memo.
+
+```
+$ triage -i scan.json -a assets.json
+
+  Exploit-Aware Vulnerability Triage
+  ==========================================================
+  10 findings ingested  ->  3 require a decision  (2 FIX NOW, 1 this cycle)
+  7 deprioritized as noise (70% of the list)
+  ----------------------------------------------------------
+  TIER      CVE                 EPSS  KEV  CVSS  ASSET
+  ----------------------------------------------------------
+  FIX NOW   CVE-2021-44228       98%  yes  10.0  web-prod-01
+  FIX NOW   CVE-2023-4966        94%  yes   9.4  web-prod-01
+  FIX CYCLE CVE-2023-38545       11%    -   9.8  web-prod-01
+  ----------------------------------------------------------
+  Top exposure CVE-2021-44228: expected loss $60K-$1.8M, fix within 7 days.
+```
+
+Two of the seven it dropped are **CVSS 9.8 "Critical"** (zlib, glibc) — demoted because nobody is exploiting them. That is the whole point.
+
+## Why CVSS alone is the noise
+
+CVSS is *technical severity in the abstract*. FIRST (who maintain CVSS) and CISA both say **do not prioritize on it alone**. Every org has hundreds of "Criticals"; CVSS cannot tell you which to fix first. `triage` combines the signals that determine *real* risk:
+
+| Signal | Question it answers | Source |
+|---|---|---|
+| **KEV** | Is it *actually* exploited in the wild? (strongest) | CISA |
+| **EPSS** | How likely in the next 30 days? | FIRST |
+| **Reachability** | Internet-facing or segmented? | your asset context |
+| **Criticality** | Does the asset matter? | your asset context |
+
+## The three-tier decision
+
+- **FIX NOW** — KEV **and** (reachable **or** business-critical). 7-day deadline.
+- **FIX THIS CYCLE** — in KEV, or EPSS ≥ 10%. 30-day window.
+- **MONITOR / ACCEPT** — no confirmed exploitation, low probability. Documented acceptance.
+
+## Install & run
+
+```bash
+git clone <this repo> && cd vuln-triage
+pip install -e .                      # gives you the `triage` command
+# or run with no install:
+PYTHONPATH=packages python -m triage_cli.main -i examples/sample-trivy.json -a examples/assets.json
+
+triage -i scan.json                   # table
+triage -i scan.json -a assets.json -f memo       # executive board memo
+triage -i scan.json -a assets.json -f register   # full markdown treatment register
+triage -i scan.json --refresh          # pull live CISA KEV + FIRST EPSS
+```
+
+Ships with an offline KEV/EPSS sample so it runs instantly; `--refresh` pulls the live feeds. **Pure standard library — no dependencies.**
+
+## Feeds any scanner
+
+```bash
+trivy image -f json myapp:latest > scan.json && triage -i scan.json
+grype myapp:latest -o json > scan.json && triage -i scan.json
+nmap --script vulners target -oX - | ... > cves.txt && triage -i cves.txt   # any CVE list
+```
+
+## What it is, and isn't — honestly
+
+- The expected-loss figure is a **CRQ scaffold** (measured likelihood × your asset value), presented as a **range, never a fake precise number**. Supply real asset values to calibrate it.
+- The ATT&CK path is a **narrative** — the plausible chain a vuln enables, mapped to ATT&CK — **not an executed attack.** `triage` runs nothing against any target. It is not a Caldera-class emulation platform.
+- Public exploitation activity does **not** prove *you* are being targeted; only authorized environment evidence does. The memo says so.
+
+## Architecture (monorepo)
+
+```
+packages/
+  triage_core     models, impact defaults, determinism
+  triage_ingest   scanner adapters (trivy, grype, generic CVE list)
+  triage_enrich   CISA KEV + FIRST EPSS lookup
+  triage_decide   the three-tier engine + ATT&CK narrative
+  triage_report   terminal table, treatment register, board memo
+  triage_cli      the `triage` command
+```
+
+Every identical input produces byte-identical output — verified by property tests (`python tests/test_decide.py`).
+
+## From triage to closure
+
+`triage` tells you **what to fix and why it matters** — free and open source. Validating reachability in *your* environment, engineering the safe remediation, running *authorized* threat emulation, and verifying that exposure stays closed with calibrated risk quantification is a follow-on engagement.
+
+→ [a2zsoc.com/productized-services](https://a2zsoc.com/productized-services?utm_source=github&utm_medium=readme&utm_campaign=vuln-triage)
+
+## License
+
+Apache-2.0.
