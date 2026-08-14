@@ -84,6 +84,30 @@ packages/
 
 Every identical input produces the same decision output, verified by executable invariant tests (`python tests/test_decide.py`).
 
+## Authorized asset-to-CVE correlation benchmark
+
+`triage-correlate` compares naïve product-name CVE matching with a scope-, version-, component-, and evidence-aware policy. It is passive by design: it reads supplied JSON and makes **zero network requests**. Correlations remain hypotheses; the tool never claims that a target is vulnerable.
+
+```bash
+PYTHONPATH=packages python -m triage_correlate.cli \
+  --scope examples/correlation/scope.json \
+  --observations examples/correlation/observations.json \
+  --advisories examples/correlation/advisories.json \
+  --ground-truth examples/correlation/ground-truth.json \
+  --out correlation-benchmark.json
+```
+
+Evidence levels are explicit:
+
+- **L0** — mention or incompatible product evidence.
+- **L1** — passively observed product, version unknown.
+- **L2** — observed version is within the advisory range.
+- **L3** — required vulnerable component is also observed.
+- **L4** — reserved for separate, authorized safe validation; this passive engine cannot emit it.
+- **L5** — reserved for remediated and independently retested closure.
+
+An explicit scope exclusion overrides a wildcard inclusion. A required component that has not been observed blocks promotion to a validation candidate. See [`docs/ADR-001-authorized-correlation-plane.md`](docs/ADR-001-authorized-correlation-plane.md).
+
 ## From triage to closure
 
 `triage` tells you **what to fix and why it matters** — free and open source. Validating reachability in *your* environment, engineering the safe remediation, running *authorized* threat emulation, and verifying that exposure stays closed with calibrated risk quantification is a follow-on engagement.

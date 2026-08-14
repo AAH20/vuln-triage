@@ -1,0 +1,9 @@
+{
+  "program": "synthetic-authorized-benchmark",
+  "retrieved_at": "2026-08-14T00:00:00Z",
+  "rules_hash": "sha256:b01b93f62a545eb9e21d292b0f5b74d90a14a8ca9550333decbef9e95cadeb55",
+  "targets": [
+    {"pattern": "*.example.test", "in_scope": true, "active_testing": true},
+    {"pattern": "admin.example.test", "in_scope": false, "active_testing": false}
+  ]
+}

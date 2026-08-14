@@ -1,0 +1,8 @@
+[
+  {"asset": "portal.example.test", "vendor": "Acme", "product": "EdgeServer", "version": "2.4.1", "confidence": 0.96, "observed_at": "2026-08-14T00:00:00Z", "evidence": ["header", "favicon"], "components": ["proxy"]},
+  {"asset": "legacy.example.test", "vendor": "Acme", "product": "EdgeServer", "version": "1.8.0", "confidence": 0.91, "observed_at": "2026-08-14T00:00:00Z", "evidence": ["header"]},
+  {"asset": "api.example.test", "vendor": "Acme", "product": "EdgeServer", "version": "3.1.0", "confidence": 0.94, "observed_at": "2026-08-14T00:00:00Z", "evidence": ["header", "error-signature"]},
+  {"asset": "admin.example.test", "vendor": "Acme", "product": "EdgeServer", "version": "2.4.1", "confidence": 0.99, "observed_at": "2026-08-14T00:00:00Z", "evidence": ["header"]},
+  {"asset": "unknown.example.test", "vendor": "Acme", "product": "EdgeServer", "version": "", "confidence": 0.72, "observed_at": "2026-08-14T00:00:00Z", "evidence": ["favicon"]},
+  {"asset": "outside.other.test", "vendor": "Acme", "product": "EdgeServer", "version": "2.4.1", "confidence": 0.98, "observed_at": "2026-08-14T00:00:00Z", "evidence": ["header"]}
+]

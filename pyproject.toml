@@ -15,6 +15,7 @@ dependencies = []
 
 [project.scripts]
 triage = "triage_cli.main:main"
+triage-correlate = "triage_correlate.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["packages"]

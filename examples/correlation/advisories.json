@@ -1,0 +1,4 @@
+[
+  {"cve": "CVE-2099-0001", "vendor": "Acme", "product": "EdgeServer", "introduced": "2.0.0", "fixed": "3.0.0", "required_component": "proxy", "kev": true, "epss": 0.93},
+  {"cve": "CVE-2099-0002", "vendor": "Other", "product": "OtherServer", "introduced": "1.0.0", "fixed": "2.0.0", "kev": false, "epss": 0.12}
+]
