@@ -1,0 +1,18 @@
+[
+  {
+    "asset": "test.deribit.com",
+    "vendor": "F5",
+    "product": "nginx",
+    "version": "",
+    "confidence": 0.65,
+    "observed_at": "2026-08-14T10:40:00+02:00",
+    "evidence": ["HackerOne Opportunity Discovery technology tag: Nginx"],
+    "components": [],
+    "protocols": [],
+    "configurations": {},
+    "ownership_confidence": 1.0,
+    "reachable": null,
+    "expires_at": "2026-08-21T10:40:00+02:00",
+    "source_type": "platform_tag"
+  }
+]

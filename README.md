@@ -108,6 +108,8 @@ Evidence levels are explicit:
 
 An explicit scope exclusion overrides a wildcard inclusion. A required component that has not been observed blocks promotion to a validation candidate. See [`docs/ADR-001-authorized-correlation-plane.md`](docs/ADR-001-authorized-correlation-plane.md).
 
+The applicability compiler also supports discontinuous `affected_ranges`, Boolean `all` / `any` / `not` predicates over components, protocols, configuration and reachability, source-quality weighting, deterministic evidence expiry, negative-policy records, and separate entity/exploit confidence. Exploit intelligence cannot compensate for unknown asset applicability. See [`docs/ADR-002-evidence-separated-confidence.md`](docs/ADR-002-evidence-separated-confidence.md).
+
 ## From triage to closure
 
 `triage` tells you **what to fix and why it matters** — free and open source. Validating reachability in *your* environment, engineering the safe remediation, running *authorized* threat emulation, and verifying that exposure stays closed with calibrated risk quantification is a follow-on engagement.

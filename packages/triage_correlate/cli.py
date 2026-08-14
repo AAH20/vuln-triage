@@ -23,6 +23,7 @@ def main(argv=None) -> int:
     parser.add_argument("--observations", required=True, help="passive technology observations JSON")
     parser.add_argument("--advisories", required=True, help="normalized vendor advisories JSON")
     parser.add_argument("--ground-truth", default="", help="optional labeled asset/CVE pairs for precision and recall")
+    parser.add_argument("--as-of", default="", help="ISO-8601 evaluation time for deterministic evidence expiry")
     parser.add_argument("--out", default="", help="optional JSON output path")
     args = parser.parse_args(argv)
 
@@ -36,10 +37,14 @@ def main(argv=None) -> int:
     observations = [Observation(**row) for row in _load(args.observations)]
     advisories = [Advisory(**row) for row in _load(args.advisories)]
     baseline = naive_correlate(observations, advisories)
-    results = correlate(receipt, observations, advisories)
+    results = correlate(receipt, observations, advisories, as_of=args.as_of, include_rejected=True)
     candidates = [row for row in results if row.status == "validation_candidate"]
     reduction = 0.0 if not baseline else 1 - (len(candidates) / len(baseline))
     candidate_pairs = {(row.asset, row.cve) for row in candidates}
+    rejected = [row for row in results if row.status == "rejected"]
+    insufficient = [row for row in results if row.status == "insufficient_evidence"]
+    weighted_signal = sum({"L1": 1, "L2": 2, "L3": 3, "L4": 4}.get(row.evidence_level, 0) for row in results if row.status != "rejected")
+    noise = len(rejected) + len(insufficient)
     quality = {}
     if args.ground_truth:
         truth = {(row["asset"], row["cve"]) for row in _load(args.ground_truth)}
@@ -67,6 +72,15 @@ def main(argv=None) -> int:
             "out_of_scope_active_requests": 0,
             "network_requests": 0,
             "quality": quality,
+            "rejected_by_policy": len(rejected),
+            "insufficient_evidence": len(insufficient),
+            "evidence_weighted_snr": round(weighted_signal / noise, 4) if noise else float(weighted_signal),
+            "entity_populations": {
+                "potentially_associated": len({row.asset for row in results}),
+                "version_applicable": len({row.asset for row in results if row.evidence_level in ("L2", "L3") and row.status != "rejected"}),
+                "configuration_applicable": len({row.asset for row in results if row.evidence_level == "L3" and row.status == "validation_candidate"}),
+                "verified_vulnerable": 0
+            },
         },
         "correlations": [asdict(row) for row in results],
     }

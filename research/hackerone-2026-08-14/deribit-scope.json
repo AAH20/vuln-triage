@@ -1,0 +1,14 @@
+{
+  "program": "hackerone/deribit",
+  "retrieved_at": "2026-08-14T10:40:00+02:00",
+  "rules_hash": "sha256:303106656fce096b7aaf01d04ecd35f603505d8c2437cff7b954a3838576827f",
+  "targets": [
+    {"pattern": "test.deribit.com", "in_scope": true, "active_testing": true},
+    {"pattern": "www.deribit.com", "in_scope": true, "active_testing": false},
+    {"pattern": "insights.deribit.com", "in_scope": true, "active_testing": false},
+    {"pattern": "pb.deribit.com", "in_scope": true, "active_testing": false},
+    {"pattern": "tools.deribit.com", "in_scope": true, "active_testing": false},
+    {"pattern": "metrics.deribit.com", "in_scope": true, "active_testing": false},
+    {"pattern": "*.deribit.com", "in_scope": true, "active_testing": false}
+  ]
+}

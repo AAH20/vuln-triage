@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import List
+from typing import Any, Dict, List, Optional
 
 
 @dataclass(frozen=True)
@@ -30,6 +30,12 @@ class Observation:
     observed_at: str = ""
     evidence: List[str] = field(default_factory=list)
     components: List[str] = field(default_factory=list)
+    protocols: List[str] = field(default_factory=list)
+    configurations: Dict[str, Any] = field(default_factory=dict)
+    ownership_confidence: float = 1.0
+    reachable: Optional[bool] = None
+    expires_at: str = ""
+    source_type: str = "unknown"
 
 
 @dataclass(frozen=True)
@@ -42,6 +48,11 @@ class Advisory:
     required_component: str = ""
     kev: bool = False
     epss: float = 0.0
+    affected_ranges: List[Dict[str, Any]] = field(default_factory=list)
+    applicability: Dict[str, Any] = field(default_factory=dict)
+    exploit_sources: List[Dict[str, Any]] = field(default_factory=list)
+    published_at: str = ""
+    disputed: bool = False
 
 
 @dataclass(frozen=True)
@@ -55,3 +66,8 @@ class Correlation:
     reasons: List[str]
     contradictions: List[str]
     active_validation_permitted: bool
+    entity_confidence: float = 0.0
+    exploit_confidence: float = 0.0
+    vulnerable_probability: float = 0.0
+    evidence_expired: bool = False
+    source_quality: float = 0.0

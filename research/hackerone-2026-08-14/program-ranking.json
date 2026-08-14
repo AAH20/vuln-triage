@@ -1,0 +1,70 @@
+{
+  "source": "Authenticated HackerOne Opportunity Discovery",
+  "observed_at": "2026-08-14T10:40:00+02:00",
+  "filter": {
+    "program_type": "bounty",
+    "asset_type": "domain",
+    "technology": "Nginx",
+    "result_count": 15
+  },
+  "ranking": [
+    {
+      "rank": 1,
+      "program": "Deribit",
+      "handle": "deribit",
+      "reward_range": "$50-$50k",
+      "awarded_reports": 45,
+      "awarded_reporters": 33,
+      "response_efficiency": "88%",
+      "safe_harbor": "Gold Standard",
+      "fit": "Explicit vulnerable-component policy and isolated test environment",
+      "constraint": "Initial testing must be confined to test.deribit.com"
+    },
+    {
+      "rank": 2,
+      "program": "Whatnot",
+      "handle": "whatnot",
+      "reward_range": "$300-$10k",
+      "awarded_reports": 167,
+      "awarded_reporters": 71,
+      "response_efficiency": "87%",
+      "safe_harbor": "Gold Standard",
+      "fit": "Open scope, fast payment and explicit automation limits",
+      "constraint": "820 reports in 90 days; known libraries require a working PoC"
+    },
+    {
+      "rank": 3,
+      "program": "KOHO",
+      "handle": "koho",
+      "reward_range": "$150-$5k",
+      "awarded_reports": 100,
+      "awarded_reporters": 47,
+      "response_efficiency": "100%",
+      "safe_harbor": "Gold Standard",
+      "fit": "Nine domain assets, retesting and perfect displayed response efficiency"
+    },
+    {
+      "rank": 4,
+      "program": "Kiwi.com",
+      "handle": "kiwicom",
+      "reward_range": "$200-$5k",
+      "awarded_reports": 239,
+      "awarded_reporters": 162,
+      "response_efficiency": "77%",
+      "safe_harbor": "Gold Standard",
+      "fit": "Source-code assets provide stronger component and version evidence than banner recon"
+    },
+    {
+      "rank": 5,
+      "program": "Malwarebytes",
+      "handle": "malwarebytes",
+      "reward_range": "$20-$6k",
+      "awarded_reports": 396,
+      "awarded_reporters": 173,
+      "response_efficiency": "73%",
+      "safe_harbor": "Gold Standard",
+      "fit": "Broad executable, domain and wildcard surface",
+      "constraint": "Higher saturation and lower response efficiency"
+    }
+  ]
+}

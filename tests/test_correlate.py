@@ -80,6 +80,84 @@ def test_naive_baseline_keeps_fixed_and_out_of_scope_noise():
     assert correlate(SCOPE, observations, [ADV]) == []
 
 
+def test_discontinuous_ranges_do_not_fill_safe_gap():
+    advisory = Advisory(
+        "CVE-2099-0002",
+        "EdgeServer",
+        "Acme",
+        affected_ranges=[
+            {"introduced": "1.0", "fixed": "1.5"},
+            {"introduced": "2.0", "fixed": "2.5"},
+        ],
+    )
+    assert correlate(SCOPE, [Observation("api.example.test", "EdgeServer", "Acme", "1.7", 1.0)], [advisory]) == []
+    assert correlate(SCOPE, [Observation("api.example.test", "EdgeServer", "Acme", "2.2", 1.0)], [advisory])[0].evidence_level == "L2"
+
+
+def test_boolean_applicability_requires_every_fact():
+    advisory = Advisory(
+        "CVE-2099-0003",
+        "EdgeServer",
+        "Acme",
+        "2.0",
+        "3.0",
+        applicability={"all": [{"component": "http3"}, {"protocol": "h3"}, {"reachable": True}]},
+    )
+    partial = Observation("api.example.test", "EdgeServer", "Acme", "2.5", 1.0, "now", components=["http3"])
+    row = correlate(SCOPE, [partial], [advisory])[0]
+    assert row.status == "insufficient_evidence"
+    complete = Observation(
+        "api.example.test",
+        "EdgeServer",
+        "Acme",
+        "2.5",
+        1.0,
+        "now",
+        components=["http3"],
+        protocols=["h3"],
+        reachable=True,
+        source_type="credentialed_inventory",
+    )
+    row = correlate(SCOPE, [complete], [advisory])[0]
+    assert row.evidence_level == "L3"
+    assert row.status == "validation_candidate"
+
+
+def test_exploit_signal_does_not_promote_unknown_asset_applicability():
+    advisory = Advisory(
+        "CVE-2099-0004",
+        "EdgeServer",
+        "Acme",
+        "2.0",
+        "3.0",
+        required_component="proxy",
+        kev=True,
+        exploit_sources=[{"source": "exploit-db", "verified": True, "confidence": 1.0}],
+    )
+    row = correlate(SCOPE, [Observation("api.example.test", "EdgeServer", "Acme", "", 1.0)], [advisory])[0]
+    assert row.exploit_confidence == 1.0
+    assert row.status == "insufficient_evidence"
+    assert row.active_validation_permitted is False
+
+
+def test_expired_evidence_cannot_be_promoted():
+    observation = Observation(
+        "api.example.test",
+        "EdgeServer",
+        "Acme",
+        "2.5",
+        1.0,
+        "2026-01-01T00:00:00Z",
+        components=["proxy"],
+        expires_at="2026-02-01T00:00:00Z",
+        source_type="sbom",
+    )
+    row = correlate(SCOPE, [observation], [ADV], as_of="2026-08-14T00:00:00Z")[0]
+    assert row.evidence_expired is True
+    assert row.status == "insufficient_evidence"
+    assert row.vulnerable_probability == 0.0
+
+
 if __name__ == "__main__":
     tests = [value for name, value in sorted(globals().items()) if name.startswith("test_")]
     for test in tests:
